@@ -42,7 +42,6 @@ void SyntaxAnalyzer::error()
 }
 
 void SyntaxAnalyzer::E() {
-    // change if to switch
     if (getCurrentToken().type == TokenType::INT)
     {
         C();

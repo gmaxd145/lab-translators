@@ -2,15 +2,17 @@
 #include "LexicalAnalyzer.h"
 #include "SyntaxAnalyzer.h"
 #include "SemanticAnalyzer.h"
-#include "iostream"
+#include <iostream>
+#include <unordered_map>
 
 int main() try {
     std::string input = "a = b = ++++c";
     LexicalAnalyzer lexicalAnalyzer(input);
     const auto& tokens = lexicalAnalyzer.getTokens();
     SyntaxAnalyzer syntaxAnalyzer(tokens);
-    SemanticAnalyzer semanticAnalyzer(input);
-    semanticAnalyzer.analyze();
+    std::unordered_map<std::string, int> variables = {{"a", 5}, {"b", 5}, {"c", 5}};
+    SemanticAnalyzer semanticAnalyzer(tokens, variables);
+    semanticAnalyzer.printAnalyzeResults();
 
     return 0;
 }

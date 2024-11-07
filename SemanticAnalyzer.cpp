@@ -7,30 +7,73 @@
 SemanticAnalyzer::SemanticAnalyzer(const std::vector<Token> &tokens, const std::unordered_map<std::string, int> &variables) : 
 _variables(_variables)
 {
-    
+    toExpandedTokens(tokens);
 }
 
-void SemanticAnalyzer::toRPN(const std::vector<Token> &tokens)
+std::vector<ExpandedToken> SemanticAnalyzer::toExpandedTokens(const std::vector<Token> &tokens)
 {
-    std::queue<Token> output;
-    std::stack<Token> opStack;
-
-    for (const auto& token : tokens) {
-        if (isOperand(token))
-        {
-            output.push(token);
-        }
-        else
-        {
-            while (!opStack.empty() && getPrecedence(opStack.top()) >= getPrecedence(token))
+    std::vector<ExpandedToken> exp;
+    // -1 in size because of end token
+    for (int i = 0; i < tokens.size() - 1; ++i) {
+        if (tokens.at(i).type == TokenType::INT) {
+            exp.push_back({ExpandedTokenType::INT, tokens.at(i).value});
+        } else if (tokens.at(i).type == TokenType::VAR) {
+            exp.push_back({ExpandedTokenType::VAR, tokens.at(i).value});
+        } else if (tokens.at(i).type == TokenType::ASSIGN) {
+            exp.push_back({ExpandedTokenType::ASSIGN, tokens.at(i).value});
+        } else if (tokens.at(i).type == TokenType::INCREMENT) {
+            unsigned short n = 1;
+            if (tokens.at(i - 1).type == TokenType::VAR && i > 0)
             {
-                output.push(opStack.top());
-                opStack.pop();
+                while (tokens.at(i + 1).type == TokenType::INCREMENT && i < tokens.size() - 2)
+                {
+                    ++i;
+                    ++n;
+                }
+                exp.push_back({ExpandedTokenType::POSTFIX_INCREMENT, tokens.at(i).value, n});
             }
-            opStack.push(token);
+            else
+            {
+                while (tokens.at(i + 1).type == TokenType::INCREMENT && i < tokens.size() - 2)
+                {
+                    ++i;
+                    ++n;
+                }
+                exp.push_back({ExpandedTokenType::PREFIX_INCREMENT, tokens.at(i).value, n});
+            }
         }
     }
+    return exp;
 }
+
+// std::queue<ToExpandedTokenken> SemanticAnalyzer::toRPN(const std::vector<ExpandedToken> &tokens)
+// {
+
+//     std::queue<Token> output;
+//     std::stack<Token> opStack;
+
+//     for (const auto& token : exp) {
+//         if (isOperand(token))
+//         {
+//             output.push(token);
+//         }
+//         else
+//         {
+//             while (!opStack.empty() && getPrecedence(opStack.top()) >= getPrecedence(token))
+//             {
+//                 if ()
+//                 output.push(opStack.top());
+//                 opStack.pop();
+//             }
+//             opStack.push(token);
+//         }
+//     }
+//     while (!opStack.empty())
+//     {
+//         output.push(opStack.top());
+//         opStack.pop();
+//     }
+// }
 
 const SemanticAnalyzer::operatorPrecedence SemanticAnalyzer::getPrecedence(const Token& op) const
 {

@@ -5,6 +5,25 @@
 #include <stack>
 #include <unordered_map>
 #include <queue>
+#include <optional>
+
+enum class ExpandedTokenType 
+{
+    VAR,
+    INT,
+    ASSIGN,
+    PREFIX_INCREMENT,
+    POSTFIX_INCREMENT
+};
+
+struct ExpandedToken
+{
+    ExpandedTokenType type;
+    std::string value;
+    unsigned short multiplier;
+
+    ExpandedToken(ExpandedTokenType t, const std::string& v, unsigned short m = 1) : type(t), value(v), multiplier(m) {}
+};
 
 class SemanticAnalyzer {
 public:
@@ -18,9 +37,10 @@ private:
     enum class operatorPrecedence
     {
         Zero,
-        One
+        One,
+        Two
     };
-    void toRPN(const std::vector<Token> &tokens);
+    std::vector<ExpandedToken> toExpandedTokens(const std::vector<Token> &tokens);
     const operatorPrecedence getPrecedence(const Token& op) const;
 
     void evaluate(const std::queue<Token> &tokens);

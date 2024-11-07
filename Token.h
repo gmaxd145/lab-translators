@@ -8,8 +8,7 @@ enum class TokenType
     INT,
     ASSIGN,
     INCREMENT,
-    END,
-    UNKNOWN
+    END
 };
 
 struct Token 

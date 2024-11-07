@@ -1,18 +1,15 @@
-// E::= T | T = E | C 
-// T::= VT’
-// T’::=++T’|e
-// C::= G | I
-// G::= V | ++G
+#pragma once
 
+// E::= T | T = E | I
+// T::= GVG
+// G::= ++G | e
 
 #include "Token.h"
 #include <vector>
 
 class SyntaxAnalyzer {
 public:
-    explicit SyntaxAnalyzer(const std::vector<Token>& tokens) : tokens(tokens), currentIndex(0) {}
-
-    void analyze();
+    explicit SyntaxAnalyzer(const std::vector<Token>& tokens);
 
 private:
     const std::vector<Token>& tokens;
@@ -20,9 +17,8 @@ private:
     
     void E();
     void T();
-    void T_();
-    void C();
     void G();
+    void B();
 
     const Token& getCurrentToken() const;
     const std::vector<Token>& getTokens() const;    

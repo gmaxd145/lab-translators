@@ -6,13 +6,13 @@
 #include <unordered_map>
 
 int main() try {
-    std::string input = "a = b = ++++c";
+    std::string input = "1 = b = ++++c++";
     LexicalAnalyzer lexicalAnalyzer(input);
     const auto& tokens = lexicalAnalyzer.getTokens();
     SyntaxAnalyzer syntaxAnalyzer(tokens);
-    std::unordered_map<std::string, int> variables = {{"a", 5}, {"b", 5}, {"c", 5}};
-    SemanticAnalyzer semanticAnalyzer(tokens, variables);
-    semanticAnalyzer.printAnalyzeResults();
+    // std::unordered_map<std::string, int> variables = {{"a", 5}, {"b", 5}, {"c", 5}};
+    // SemanticAnalyzer semanticAnalyzer(tokens, variables);
+    // semanticAnalyzer.printAnalyzeResults();
 
     return 0;
 }

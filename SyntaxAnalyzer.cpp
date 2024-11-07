@@ -4,36 +4,13 @@
 const std::vector<Token>& SyntaxAnalyzer::getTokens() const {
     return tokens;
 }
-void SyntaxAnalyzer::analyze() {
+SyntaxAnalyzer::SyntaxAnalyzer(const std::vector<Token>& tokens) : tokens(tokens), currentIndex(0)
+{
     E();
     if (getCurrentToken().type != TokenType::END) {
         throw std::runtime_error("Unexpected token at end of input.");
     }
 }
-
-    // std::string tokenTypeToStr()
-    // {
-    //     std::string typeInStr;
-    //     switch (currentToken().type)
-    //     {
-    //     case TokenType::ASSIGN:
-    //         typeInStr = "assign";
-    //         break;
-    //     case TokenType::END:
-    //         typeInStr = "end";
-    //         break;
-    //     case TokenType::VAR:
-    //         typeInStr = "var";
-    //         break;    
-    //     case TokenType::INT:
-    //         typeInStr = "int";
-    //         break;    
-    //     case TokenType::INCREMENT:
-    //         typeInStr = "increment";
-    //         break;    
-    //     }
-    //     return typeInStr;
-    // }
 
 void SyntaxAnalyzer::error()
 {   
@@ -42,67 +19,32 @@ void SyntaxAnalyzer::error()
 }
 
 void SyntaxAnalyzer::E() {
-    if (getCurrentToken().type == TokenType::INT)
-    {
-        C();
-    }
-    else if (getCurrentToken().type == TokenType::VAR)
+    if (getCurrentToken().type != TokenType::INT) 
     {
         T();
-        if (getCurrentToken().type == TokenType::ASSIGN) {
+        if (getCurrentToken().type == TokenType::ASSIGN) 
+        {
+            ++currentIndex;
             E();
         }
     }
-    else
-    {
-        error();
-    }
-    ++currentIndex;
 }
 
-void SyntaxAnalyzer::T() {
+void SyntaxAnalyzer::T() 
+{
+    B();
     if (getCurrentToken().type == TokenType::VAR)
     {
-        // add to ast var
+        ++currentIndex;
+        B();
     }
-    T_;
-    ++currentIndex; 
 }
 
-void SyntaxAnalyzer::T_() {
-    if (getCurrentToken().type != TokenType::INCREMENT)
+void SyntaxAnalyzer::B() {
+    while (getCurrentToken().type  == TokenType::INCREMENT)
     {
-        return;
+        ++currentIndex;
     }
-    T_;
-    ++currentIndex;
-}
-
-void SyntaxAnalyzer::C()
-{
-    if (getCurrentToken().type == TokenType::INT)
-    {
-        //add to ast
-    }
-    else
-    {
-        G();
-    }
-    ++currentIndex;
-}
-
-void SyntaxAnalyzer::G()
-{
-    if (getCurrentToken().type == TokenType::VAR)
-    {
-        // add to ast
-    }
-    else
-    {
-        // add to asd ++ op
-        G();
-    }
-    ++currentIndex;
 }
 
 const Token& SyntaxAnalyzer::getCurrentToken() const 

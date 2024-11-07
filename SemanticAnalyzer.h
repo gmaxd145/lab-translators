@@ -1,8 +1,10 @@
+#pragma once
+
 #include "Token.h"
 #include <string>
 #include <stack>
 #include <unordered_map>
-#include <stdexcept>
+#include <queue>
 
 class SemanticAnalyzer {
 public:

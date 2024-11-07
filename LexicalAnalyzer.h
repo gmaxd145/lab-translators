@@ -1,30 +1,29 @@
-#ifndef LEXICALANALYZER_H
-#define LEXICALANALYZER_H
+#pragma once
 
+#include "Token.h"
 #include <string>
 #include <vector>
 #include <regex>
 
-// Forward declaration of Token and TokenType
-enum class TokenType {
-    INT,
-    VAR,
-    ASSIGN,
-    INCREMENT,
-    END
-};
+// enum class TokenType {
+//     INT,
+//     VAR,
+//     ASSIGN,
+//     INCREMENT,
+//     END
+// };
 
-class Token {
-public:
-    Token(TokenType type, const std::string& value) : type(type), value(value) {}
+// class Token {
+// public:
+//     Token(TokenType type, const std::string& value) : type(type), value(value) {}
 
-    TokenType getType() const { return type; }
-    const std::string& getValue() const { return value; }
+//     TokenType getType() const { return type; }
+//     const std::string& getValue() const { return value; }
 
-private:
-    TokenType type;
-    std::string value;
-};
+// private:
+//     TokenType type;
+//     std::string value;
+// };
 
 class LexicalAnalyzer {
 public:
@@ -39,5 +38,3 @@ private:
 
     void tokenize();
 };
-
-#endif // LEXICALANALYZER_H

@@ -1,6 +1,9 @@
+#pragma once
+
 #include <string>
 
-enum class TokenType {
+enum class TokenType 
+{
     VAR,
     INT,
     ASSIGN,
@@ -9,7 +12,8 @@ enum class TokenType {
     UNKNOWN
 };
 
-struct Token {
+struct Token 
+{
     TokenType type;
     std::string value;
 

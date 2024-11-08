@@ -19,10 +19,10 @@ enum class ExpandedTokenType
 struct ExpandedToken
 {
     ExpandedTokenType type;
-    std::string value;
+    std::optional<std::string> value;
     unsigned short multiplier;
 
-    ExpandedToken(ExpandedTokenType t, const std::string& v, unsigned short m = 1) : type(t), value(v), multiplier(m) {}
+    ExpandedToken(ExpandedTokenType t, const std::optional<std::string> v, unsigned short m = 1) : type(t), value(v), multiplier(m) {}
 };
 
 class SemanticAnalyzer {
@@ -41,7 +41,8 @@ private:
         Two
     };
     std::vector<ExpandedToken> toExpandedTokens(const std::vector<Token> &tokens);
-    const operatorPrecedence getPrecedence(const Token& op) const;
+    unsigned short getIncrementMultiplier(int& position, const std::vector<Token> &tokens);
+    const operatorPrecedence getPrecedence(const Token &op) const;
 
     void evaluate(const std::queue<Token> &tokens);
 

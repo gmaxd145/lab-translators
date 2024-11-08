@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 int main() try {
-    std::string input = "a = ++++c++++++";
+    std::string input = "a = b = ++++c++++++";
     LexicalAnalyzer lexicalAnalyzer(input);
     const auto& tokens = lexicalAnalyzer.getTokens();
     SyntaxAnalyzer syntaxAnalyzer(tokens);

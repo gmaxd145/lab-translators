@@ -7,7 +7,9 @@
 #include <queue>
 #include <optional>
 
-enum class ExpandedTokenType 
+struct ExpandedToken
+{
+    enum class Type 
 {
     VAR,
     INT,
@@ -16,13 +18,11 @@ enum class ExpandedTokenType
     POSTFIX_INCREMENT
 };
 
-struct ExpandedToken
-{
-    ExpandedTokenType type;
+    Type type;
     std::optional<std::string> value;
     unsigned short multiplier;
 
-    ExpandedToken(ExpandedTokenType t, const std::optional<std::string> v, unsigned short m = 1) : type(t), value(v), multiplier(m) {}
+    ExpandedToken(Type t, const std::optional<std::string> v, unsigned short m = 1) : type(t), value(v), multiplier(m) {}
 };
 
 class SemanticAnalyzer {
@@ -42,9 +42,13 @@ private:
     };
     std::vector<ExpandedToken> toExpandedTokens(const std::vector<Token> &tokens);
     unsigned short getIncrementMultiplier(int& position, const std::vector<Token> &tokens);
-    const operatorPrecedence getPrecedence(const Token &op) const;
+
+    std::queue<ExpandedToken> toRPN(const std::vector<ExpandedToken> &expTokens);
+
+    const operatorPrecedence getPrecedence(const ExpandedToken &op) const;
 
     void evaluate(const std::queue<Token> &tokens);
 
-    const bool isOperand(const Token& token) const;
+    // alternative: if value presents than operand other way operator
+    // const bool isOperand(const Token& token) const;
 };

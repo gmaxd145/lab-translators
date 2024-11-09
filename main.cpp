@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 int main() try {
-    std::string input = "a = b = ++++c++++++";
+    std::string input = "a = ++c++";
     LexicalAnalyzer lexicalAnalyzer(input);
     const auto& tokens = lexicalAnalyzer.getTokens();
     SyntaxAnalyzer syntaxAnalyzer(tokens);
@@ -19,3 +19,5 @@ int main() try {
 catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     }
+
+    // ac++=c++

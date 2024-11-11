@@ -2,19 +2,19 @@
 
 #include <string>
 
-enum class TokenType 
+struct Token 
 {
+    enum class Type 
+    {
     VAR,
     INT,
     ASSIGN,
     INCREMENT,
     END
-};
+    };
 
-struct Token 
-{
-    TokenType type;
+    Type type;
     std::string value;
 
-    Token(TokenType t, const std::string& v) : type(t), value(v) {}
+    Token(Type t, const std::string& v) : type(t), value(v) {}
 };

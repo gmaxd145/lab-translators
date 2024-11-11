@@ -5,19 +5,16 @@
 #include <iostream>
 #include <unordered_map>
 
-int main() try {
-    std::string input = "a = ++c++";
+int main() {
+    std::string input = "++a = b";
     LexicalAnalyzer lexicalAnalyzer(input);
     const auto& tokens = lexicalAnalyzer.getTokens();
     SyntaxAnalyzer syntaxAnalyzer(tokens);
-    std::unordered_map<std::string, int> variables = {{"a", 5}, {"b", 5}, {"c", 5}};
+    std::unordered_map<std::string, int> variables = {{"a", 1}, {"b", 2}, {"c", 3}, {"d", 4}};
     SemanticAnalyzer semanticAnalyzer(tokens, variables);
-    // semanticAnalyzer.printAnalyzeResults();
+    semanticAnalyzer.printAnalyzeResults();
 
     return 0;
 }
-catch (const std::exception& e) {
-        std::cout << e.what() << std::endl;
-    }
 
     // ac++=c++

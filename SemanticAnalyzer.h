@@ -7,6 +7,8 @@
 #include <queue>
 #include <optional>
 
+//idea: make exptoken base class and make childs operator and operand
+
 struct ExpandedToken
 {
     enum class Type 
@@ -34,6 +36,8 @@ public:
 private:
     std::unordered_map<std::string, int> _variables;
 
+    bool hasDuplicateKeys(const std::unordered_map<std::string, int> &myMap);
+    
     enum class operatorPrecedence
     {
         Zero,
@@ -47,8 +51,5 @@ private:
 
     const operatorPrecedence getPrecedence(const ExpandedToken &op) const;
 
-    void evaluate(const std::queue<Token> &tokens);
-
-    // alternative: if value presents than operand other way operator
-    // const bool isOperand(const Token& token) const;
+    void evaluate(std::queue<ExpandedToken> expTokens);
 };

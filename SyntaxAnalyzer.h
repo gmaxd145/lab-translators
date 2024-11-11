@@ -1,8 +1,9 @@
 #pragma once
+// <E> ::= <G>V | <G>V = <F>  | V<L>
+// <F>:: = <G>V = <F> | I | V<L> | <G>V
+// <G>::= ++<G> | e
+// <L> ::= ++<L> | ++
 
-// E::= T | T = E | I
-// T::= GVG
-// G::= ++G | e
 
 #include "Token.h"
 #include <vector>
@@ -16,9 +17,9 @@ private:
     size_t currentIndex;
     
     void E();
-    void T();
+    void F();
     void G();
-    void B();
+    void L();
 
     const Token& getCurrentToken() const;
     const std::vector<Token>& getTokens() const;    

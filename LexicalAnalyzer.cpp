@@ -16,14 +16,14 @@ void LexicalAnalyzer::tokenize() {
 
     for (auto it = begin; it != end; ++it) {
         if ((*it)[1].matched) {
-            tokens.emplace_back(TokenType::INT, (*it)[1].str());
+            tokens.emplace_back(Token::Type::INT, (*it)[1].str());
         } else if ((*it)[2].matched) {
-            tokens.emplace_back(TokenType::VAR, (*it)[2].str());
+            tokens.emplace_back(Token::Type::VAR, (*it)[2].str());
         } else if ((*it)[3].matched) {
-            tokens.emplace_back(TokenType::ASSIGN, (*it)[3].str());
+            tokens.emplace_back(Token::Type::ASSIGN, (*it)[3].str());
         } else if ((*it)[4].matched) {
-            tokens.emplace_back(TokenType::INCREMENT, (*it)[4].str());
+            tokens.emplace_back(Token::Type::INCREMENT, (*it)[4].str());
         }
     }
-    tokens.emplace_back(TokenType::END, "");  // End token
+    tokens.emplace_back(Token::Type::END, "");  // End token
 }

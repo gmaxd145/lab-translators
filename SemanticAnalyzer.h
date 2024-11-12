@@ -48,6 +48,7 @@ private:
     unsigned short getIncrementMultiplier(int& position, const std::vector<Token> &tokens);
 
     std::queue<ExpandedToken> toRPN(const std::vector<ExpandedToken> &expTokens);
+    ExpandedToken getFirstVarFromLastExpr(const std::vector<std::vector<ExpandedToken>>& exprs);
 
     const operatorPrecedence getPrecedence(const ExpandedToken &op) const;
 

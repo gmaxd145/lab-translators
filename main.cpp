@@ -4,15 +4,28 @@
 #include "SemanticAnalyzer.h"
 #include <iostream>
 #include <unordered_map>
+#include <cassert>
 
 int main() {
-    std::string input = "++a = b";
+    std::unordered_map<std::string, int> variables;
+    int a = variables["a"] = 1;
+    int b = variables["b"] = 2;
+    int c = variables["c"] = 3;
+    int d = variables["d"] = 4;
+    a=++b=1;
+    // ++a
+    // a++
+    std::cout << "c++: a=" << a << " b=" << b << " c=" << c << " d=" << d << std::endl;
+
+
+    std::string input = "a=++b=++b=1";
     LexicalAnalyzer lexicalAnalyzer(input);
     const auto& tokens = lexicalAnalyzer.getTokens();
     SyntaxAnalyzer syntaxAnalyzer(tokens);
-    std::unordered_map<std::string, int> variables = {{"a", 1}, {"b", 2}, {"c", 3}, {"d", 4}};
     SemanticAnalyzer semanticAnalyzer(tokens, variables);
-    semanticAnalyzer.printAnalyzeResults();
+    std::cout << "Translator:" << std::endl;
+    // semanticAnalyzer.printAnalyzeResults();
+    
 
     return 0;
 }

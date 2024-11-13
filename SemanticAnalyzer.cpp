@@ -5,6 +5,7 @@
 #include <queue>
 #include <set>
 #include <algorithm>
+#include <iterator>
 // a = ++b = c++ -> c++ = b++ = a
 
 constexpr int maxExpLen = 5;
@@ -82,18 +83,22 @@ ExpandedToken SemanticAnalyzer::getFirstVarFromLastExpr(const std::vector<std::v
 // ab=
 std::queue<ExpandedToken> SemanticAnalyzer::toRPN(const std::vector<ExpandedToken> &expTokens)
 {
-    // 1 step
+    // 1 step: parsing to assignment expressions
     std::vector<std::vector<ExpandedToken>> exprs;
     std::vector<ExpandedToken> expr;
     int assigmentIndex{};
     auto exprEnd = expTokens.rbegin();
-    for (auto it = expTokens.rbegin(); it != expTokens.rend() + 1; ++it) {
+    for (auto it = expTokens.rbegin(); it != expTokens.rend(); ++it) {
+        // if ((*it).value.has_value()) std::cout << (*it).value.value() << std::endl;
         if ((*it).type == ExpandedToken::Type::ASSIGN) ++assigmentIndex;
-        if (assigmentIndex == 2 || it == expTokens.rend()) {
-            std::copy(exprEnd, it, std::back_inserter(expr));
+        // int index = std::distance(expTokens.rbegin(), it);
+        std::cout << "index: " << std::distance(expTokens.rbegin(), it) << ", value: " << (*it).value.value_or("") << ", assigmentIndex: " << assigmentIndex << std::endl;
+        if (assigmentIndex == 2 || it == --expTokens.rend()) {
+            if (it == --expTokens.rend()) std::copy(exprEnd, it + 1, std::back_inserter(expr));
+            else std::copy(exprEnd, it, std::back_inserter(expr));
             std::reverse(expr.begin(), expr.end());
-            assigmentIndex = 0;
-            if (!(it == expTokens.rbegin())) exprEnd = it;
+            assigmentIndex = 1;
+            exprEnd = it;
             if (!exprs.empty()) expr.push_back(getFirstVarFromLastExpr(exprs));
             exprs.push_back(expr);
             expr.clear();
@@ -135,6 +140,7 @@ std::queue<ExpandedToken> SemanticAnalyzer::toRPN(const std::vector<ExpandedToke
     //     opStack.pop();
     // }
     // return output;
+    return std::queue<ExpandedToken>{};
 }
 
 //TODO: change switch to if

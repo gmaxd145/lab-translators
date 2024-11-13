@@ -18,7 +18,7 @@ int main() {
     std::cout << "c++: a=" << a << " b=" << b << " c=" << c << " d=" << d << std::endl;
 
 
-    std::string input = "a=1";
+    std::string input = "a=++b=c++";
     LexicalAnalyzer lexicalAnalyzer(input);
     const auto& tokens = lexicalAnalyzer.getTokens();
     SyntaxAnalyzer syntaxAnalyzer(tokens);

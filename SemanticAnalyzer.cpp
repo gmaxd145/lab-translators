@@ -104,8 +104,46 @@ std::queue<ExpandedToken> SemanticAnalyzer::toRPN(const std::vector<ExpandedToke
             expr.clear();
         }
     }
-    int a = 1;
     // 2 step
+    std::vector<std::queue<ExpandedToken>> rpnExprs;
+    // std::queue<ExpandedToken> tempExpr;
+    std::stack<ExpandedToken> opStack;
+    std::optional<ExpandedToken> postfixToken;
+    int postfixMultiplier; 
+    int rpnExprsIndex{};
+    for (const auto& expr : exprs) {
+        rpnExprs.emplace_back(std::queue<ExpandedToken>());
+        for (const auto& expToken : expr) {
+            // rpn
+            if (expToken.type == ExpandedToken::Type::POSTFIX_INCREMENT) {
+                postfixToken = rpnExprs.at(rpnExprsIndex).back();
+                postfixMultiplier = expToken.multiplier;
+            }
+            if (expToken.value.has_value()) rpnExprs.at(rpnExprsIndex).push(expToken);
+            else if (expToken.type != ExpandedToken::Type::POSTFIX_INCREMENT) {
+                while (!opStack.empty() && getPrecedence(opStack.top()) >= getPrecedence(expToken))
+                {
+                    rpnExprs.at(rpnExprsIndex).push(opStack.top());
+                    opStack.pop();
+                }
+                opStack.push(expToken);
+            }
+        }
+        while (!opStack.empty()) {
+            rpnExprs.at(rpnExprsIndex).push(opStack.top());
+            opStack.pop();
+        }
+        if (postfixToken.has_value()) {
+            rpnExprs.at(rpnExprsIndex).push(*postfixToken);
+            rpnExprs.at(rpnExprsIndex).push({ExpandedToken::Type::POSTFIX_INCREMENT, 
+                                             std::nullopt, postfixMultiplier});
+        }
+        ++rpnExprsIndex;
+        postfixToken.reset();
+    }
+    for (auto& rpnExpr : rpnExprs) {
+        
+    }
     // std::queue<ExpandedToken> output;
     // std::stack<ExpandedToken> opStack;
     // for (const auto& expToken : expTokens) {
@@ -147,12 +185,10 @@ std::queue<ExpandedToken> SemanticAnalyzer::toRPN(const std::vector<ExpandedToke
 const SemanticAnalyzer::operatorPrecedence SemanticAnalyzer::getPrecedence(const ExpandedToken& op) const
 {
     switch (op.type) {
-    case ExpandedToken::Type::POSTFIX_INCREMENT:
-        return operatorPrecedence::Zero;
     case ExpandedToken::Type::ASSIGN:
-        return operatorPrecedence::One;
+        return operatorPrecedence::Zero;
     case ExpandedToken::Type::PREFIX_INCREMENT:
-        return operatorPrecedence::Two;
+        return operatorPrecedence::One;
     };
     throw std::runtime_error("getPrecedence");
 }

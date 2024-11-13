@@ -41,8 +41,7 @@ private:
     enum class operatorPrecedence
     {
         Zero,
-        One,
-        Two
+        One
     };
     std::vector<ExpandedToken> toExpandedTokens(const std::vector<Token> &tokens);
     unsigned short getIncrementMultiplier(int& position, const std::vector<Token> &tokens);

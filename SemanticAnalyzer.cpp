@@ -74,14 +74,14 @@ ExpandedToken SemanticAnalyzer::getFirstVarFromLastExpr(const std::vector<std::v
 
 
 
-// a=++b=1;
+// a=++b=c++;
 // 1 step
-// ++b = 1
+// ++b = c++
 // a = b
 // 2 step
-// b++1=
+// b++c=c++
 // ab=
-std::queue<ExpandedToken> SemanticAnalyzer::toRPN(const std::vector<ExpandedToken> &expTokens)
+void SemanticAnalyzer::toRPN(const std::vector<ExpandedToken> &expTokens)
 {
     // 1 step: parsing to assignment expressions
     std::vector<std::vector<ExpandedToken>> exprs;
@@ -89,10 +89,7 @@ std::queue<ExpandedToken> SemanticAnalyzer::toRPN(const std::vector<ExpandedToke
     int assigmentIndex{};
     auto exprEnd = expTokens.rbegin();
     for (auto it = expTokens.rbegin(); it != expTokens.rend(); ++it) {
-        // if ((*it).value.has_value()) std::cout << (*it).value.value() << std::endl;
         if ((*it).type == ExpandedToken::Type::ASSIGN) ++assigmentIndex;
-        // int index = std::distance(expTokens.rbegin(), it);
-        std::cout << "index: " << std::distance(expTokens.rbegin(), it) << ", value: " << (*it).value.value_or("") << ", assigmentIndex: " << assigmentIndex << std::endl;
         if (assigmentIndex == 2 || it == --expTokens.rend()) {
             if (it == --expTokens.rend()) std::copy(exprEnd, it + 1, std::back_inserter(expr));
             else std::copy(exprEnd, it, std::back_inserter(expr));
@@ -104,81 +101,68 @@ std::queue<ExpandedToken> SemanticAnalyzer::toRPN(const std::vector<ExpandedToke
             expr.clear();
         }
     }
-    // 2 step
-    std::vector<std::queue<ExpandedToken>> rpnExprs;
-    // std::queue<ExpandedToken> tempExpr;
+    // 2 step: to rpn
+    std::vector<std::vector<ExpandedToken>> rpnExprs;
     std::stack<ExpandedToken> opStack;
     std::optional<ExpandedToken> postfixToken;
     int postfixMultiplier; 
     int rpnExprsIndex{};
     for (const auto& expr : exprs) {
-        rpnExprs.emplace_back(std::queue<ExpandedToken>());
+        rpnExprs.emplace_back(std::vector<ExpandedToken>());
         for (const auto& expToken : expr) {
             // rpn
+            // postfix increment handler 
             if (expToken.type == ExpandedToken::Type::POSTFIX_INCREMENT) {
                 postfixToken = rpnExprs.at(rpnExprsIndex).back();
                 postfixMultiplier = expToken.multiplier;
             }
-            if (expToken.value.has_value()) rpnExprs.at(rpnExprsIndex).push(expToken);
+            if (expToken.value.has_value()) rpnExprs.at(rpnExprsIndex).push_back(expToken);
             else if (expToken.type != ExpandedToken::Type::POSTFIX_INCREMENT) {
                 while (!opStack.empty() && getPrecedence(opStack.top()) >= getPrecedence(expToken))
                 {
-                    rpnExprs.at(rpnExprsIndex).push(opStack.top());
+                    rpnExprs.at(rpnExprsIndex).push_back(opStack.top());
                     opStack.pop();
                 }
                 opStack.push(expToken);
             }
         }
         while (!opStack.empty()) {
-            rpnExprs.at(rpnExprsIndex).push(opStack.top());
+            rpnExprs.at(rpnExprsIndex).push_back(opStack.top());
             opStack.pop();
         }
         if (postfixToken.has_value()) {
-            rpnExprs.at(rpnExprsIndex).push(*postfixToken);
-            rpnExprs.at(rpnExprsIndex).push({ExpandedToken::Type::POSTFIX_INCREMENT, 
+            rpnExprs.at(rpnExprsIndex).push_back(*postfixToken);
+            rpnExprs.at(rpnExprsIndex).push_back({ExpandedToken::Type::POSTFIX_INCREMENT, 
                                              std::nullopt, postfixMultiplier});
         }
         ++rpnExprsIndex;
         postfixToken.reset();
     }
-    for (auto& rpnExpr : rpnExprs) {
-        
+    // 3 step: evaluate
+    for (const auto& rpnExpr : rpnExprs) {
+        for (const auto& tk : rpnExpr) {
+            if (tk.value.has_value()) {
+                opStack.push(tk);        
+            }
+            else {
+                if (tk.type == ExpandedToken::Type::POSTFIX_INCREMENT) {
+                    _variables.at(opStack.top().value.value()) += opStack.top().multiplier;
+                }
+                if (tk.type == ExpandedToken::Type::PREFIX_INCREMENT) {
+                    _variables.at(opStack.top().value.value()) += opStack.top().multiplier;
+                }
+                if (tk.type == ExpandedToken::Type::ASSIGN) {
+                    int secondVar{};
+                    if (opStack.top().type == ExpandedToken::Type::INT) secondVar = stoi(opStack.top().value.value());
+                    else secondVar = _variables.at(opStack.top().value.value());
+                    opStack.pop();
+                    _variables.at(opStack.top().value.value()) = secondVar;
+                    opStack.pop();
+                }
+
+            }
+        }   
     }
-    // std::queue<ExpandedToken> output;
-    // std::stack<ExpandedToken> opStack;
-    // for (const auto& expToken : expTokens) {
-    //     // stores vars for postfix increment a = b++ -> ab=b++ (second b in exapmle stores in postfixQueue) 
-    //     std::queue<std::string> postfixQueue; 
-    //     if (!output.empty() && output.back().type == ExpandedToken::Type::VAR && 
-    //         expToken.type == ExpandedToken::Type::POSTFIX_INCREMENT) {
-    //         postfixQueue.push(output.back().value.value()); 
-    //     }
-    //     // only operands has values
-    //     if (expToken.value.has_value())
-    //     {
-    //         output.push(expToken);
-    //     }
-    //     else
-    //     {
-    //         while (!opStack.empty() && getPrecedence(opStack.top()) >= getPrecedence(expToken))
-    //         {
-    //             output.push(opStack.top());
-    //             opStack.pop();
-    //         }
-    //         if (expToken.type == ExpandedToken::Type::POSTFIX_INCREMENT) {
-    //                 output.push({ExpandedToken::Type::VAR, postfixQueue.front()});
-    //                 postfixQueue.pop();
-    //             }
-    //         opStack.push(expToken);
-    //     }
-    // }
-    // while (!opStack.empty())
-    // {
-    //     output.push(opStack.top());
-    //     opStack.pop();
-    // }
-    // return output;
-    return std::queue<ExpandedToken>{};
 }
 
 //TODO: change switch to if
@@ -191,36 +175,6 @@ const SemanticAnalyzer::operatorPrecedence SemanticAnalyzer::getPrecedence(const
         return operatorPrecedence::One;
     };
     throw std::runtime_error("getPrecedence");
-}
-
-void SemanticAnalyzer::evaluate(std::queue<ExpandedToken>   expTokens)
-{
-    std::stack<ExpandedToken> stack;
-    while(!expTokens.empty()) 
-    {
-        const auto& expToken = expTokens.front();
-        if (expToken.value.has_value()) {
-            stack.push(expToken);
-        } else {
-            switch (expToken.type) {
-            case ExpandedToken::Type::POSTFIX_INCREMENT:
-                _variables.at(stack.top().value.value()) += expToken.multiplier;
-                stack.pop();
-                break;
-            case ExpandedToken::Type::PREFIX_INCREMENT:
-                _variables.at(stack.top().value.value()) += expToken.multiplier;
-                break;
-            case ExpandedToken::Type::ASSIGN:
-                auto t1 = stack.top();
-                //stack.pop();
-                auto t2 = stack.top();
-                stack.pop();
-                _variables.at(t2.value.value()) = _variables.at(t1.value.value());
-                break; 
-            };
-        }
-        expTokens.pop();
-    }    
 }
 
 void SemanticAnalyzer::printAnalyzeResults()

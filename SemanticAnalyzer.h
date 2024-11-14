@@ -22,9 +22,9 @@ struct ExpandedToken
 
     Type type;
     std::optional<std::string> value;
-    unsigned short multiplier;
+    int multiplier;
 
-    ExpandedToken(Type t, const std::optional<std::string> v, unsigned short m = 1) : type(t), value(v), multiplier(m) {}
+    ExpandedToken(Type t, const std::optional<std::string> v, int m = 1) : type(t), value(v), multiplier(m) {}
 };
 
 class SemanticAnalyzer {
@@ -46,10 +46,9 @@ private:
     std::vector<ExpandedToken> toExpandedTokens(const std::vector<Token> &tokens);
     unsigned short getIncrementMultiplier(int& position, const std::vector<Token> &tokens);
 
-    std::queue<ExpandedToken> toRPN(const std::vector<ExpandedToken> &expTokens);
+    void toRPN(const std::vector<ExpandedToken> &expTokens);
     ExpandedToken getFirstVarFromLastExpr(const std::vector<std::vector<ExpandedToken>>& exprs);
 
     const operatorPrecedence getPrecedence(const ExpandedToken &op) const;
 
-    void evaluate(std::queue<ExpandedToken> expTokens);
 };

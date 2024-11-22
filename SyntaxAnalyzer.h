@@ -15,7 +15,9 @@ public:
 private:
     const std::vector<Token>& tokens;
     size_t currentIndex;
-    
+
+    void error(const std::string &msg);
+
     void E();
     void F();
     void G();

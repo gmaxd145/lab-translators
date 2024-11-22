@@ -8,18 +8,21 @@
 
 int main() {
     std::unordered_map<std::string, int> variables;
-    int a = variables["a"] = 1;
-    int b = variables["b"] = 2;
-    int c = variables["c"] = 3;
-    int d = variables["d"] = 4;
-    a=++b=c=d++;
-    std::cout << "c++: a=" << a << " b=" << b << " c=" << c << " d=" << d << std::endl;
-    std::string input = "a=++b=c=d++";
+    variables["a"] = 1;
+    variables["b"] = 2;
+    variables["c"] = 3;
+    variables["d"] = 4;
+    std::cout << "Input variables:" << std::endl;
+    for (const auto& pair : variables) {
+        std::cout << pair.first << " - " << pair.second << std::endl;
+    }
+    std::string input = "++b";
+    std::cout << "Input expr: " << input << std::endl;
     LexicalAnalyzer lexicalAnalyzer(input);
     const auto& tokens = lexicalAnalyzer.getTokens();
     SyntaxAnalyzer syntaxAnalyzer(tokens);
     SemanticAnalyzer semanticAnalyzer(tokens, variables);
-    std::cout << "Translator:" << std::endl;
+    std::cout << "Output:" << std::endl;
     semanticAnalyzer.printAnalyzeResults();
     
     return 0;

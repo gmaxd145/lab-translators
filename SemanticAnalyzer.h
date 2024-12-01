@@ -29,7 +29,7 @@ struct ExpandedToken
 
 class SemanticAnalyzer {
 public:
-    SemanticAnalyzer(const std::vector<Token>& tokens, const std::unordered_map<std::string, int>& variables);
+    SemanticAnalyzer(const std::vector<Token>& tokens, const std::unordered_map<std::string, int>& variables = std::unordered_map<std::string, int>());
 
     void printAnalyzeResults();
 

@@ -13,21 +13,26 @@ constexpr int maxExpLen = 5;
 
 SemanticAnalyzer::SemanticAnalyzer(const std::vector<Token> &tokens, const std::unordered_map<std::string, int>& variables)
 {
-    _variables = variables;
-    if (hasDuplicateKeys(_variables)) throw std::invalid_argument("Redefinition of variables!");
+    for (const auto& token : tokens) {
+        if (token.type == Token::Type::VAR) {
+            _variables[token.value] = 0;
+        }
+    }
+    // _variables = variables;
+    // if (hasDuplicateKeys(_variables)) throw std::invalid_argument("Redefinition of variables!");
     auto expTokens = toExpandedTokens(tokens);
     toRPN(expTokens);
 }
 
-bool SemanticAnalyzer::hasDuplicateKeys(const std::unordered_map<std::string, int>& myMap) {
-    std::set<std::string> uniqueKeys;
-    for (const auto& [key, value] : myMap) {
-        if (!uniqueKeys.insert(key).second) {
-            return true;
-        }
-    }
-    return false;
-}
+// bool SemanticAnalyzer::hasDuplicateKeys(const std::unordered_map<std::string, int>& myMap) {
+//     std::set<std::string> uniqueKeys;
+//     for (const auto& [key, value] : myMap) {
+//         if (!uniqueKeys.insert(key).second) {
+//             return true;
+//         }
+//     }
+//     return false;
+// }
 
 // TODO: refactor to iterators
 std::vector<ExpandedToken> SemanticAnalyzer::toExpandedTokens(const std::vector<Token> &tokens)
